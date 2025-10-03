@@ -16,11 +16,13 @@ public class JwtHelpersExtension implements TemplateHelperProviderExtension {
     public Map<String, Helper<?>> provideTemplateHelpers() {
         JwtHandlebarsHelper jwtHandlebarsHelper = new JwtHandlebarsHelper(jwtSigningKeySettings);
         JwksHandlebarsHelper jwksHandlebarsHelper = new JwksHandlebarsHelper(jwtSigningKeySettings);
+        JwkHandlebarsHelper jwkHandlebarsHelper = new JwkHandlebarsHelper(jwtSigningKeySettings);
         return Map.of(
                 "jwt", jwtHandlebarsHelper,
                 "claims", new ClaimListHandlebarsHelper(),
                 "claimsObject", new ClaimsObjectHandlebarsHelper(),
-                "jwks", jwksHandlebarsHelper);
+                "jwks", jwksHandlebarsHelper,
+                "jwk", jwkHandlebarsHelper);
     }
 
     @Override

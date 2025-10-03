@@ -254,6 +254,39 @@ public class JwtHelperAcceptanceTest {
 
   @Test
   @SuppressWarnings("unchecked")
+  void returns_single_JSON_web_key_for_RSA256_public_key() {
+    wm.stubFor(
+        get(urlPathEqualTo("/.well-known/jwks.json"))
+            .willReturn(okJson("{{{jwk}}}").withTransformers("response-template")));
+
+    JwkRsaKeyProvider keyProvider =
+        new JwkRsaKeyProvider(
+            new ApacheBackedHttpClient(HttpClientFactory.createClient(), false), wm.baseUrl());
+
+    String body = getForTemplate("{{{jwt alg='RS256'}}}");
+    DecodedJWT jwt = JWT.decode(body);
+    Algorithm algorithm = Algorithm.RSA256(keyProvider);
+
+    URI url = URI.create(wm.baseUrl() + "/.well-known/jwks.json");
+    HttpResponse<String> response =
+        uncheck(
+            () ->
+                client.send(
+                    HttpRequest.newBuilder(url).GET().build(),
+                    HttpResponse.BodyHandlers.ofString()),
+            HttpResponse.class);
+
+    Map<String, Object> key = Json.read(response.body(), Map.class);
+    assertThat(key.get("alg"), is("RS256"));
+    assertThat(key.get("kty"), is("RSA"));
+    assertThat(key.get("use"), is("sig"));
+    assertThat(key.get("n"), notNullValue());
+    assertThat(key.get("e"), notNullValue());
+    assertThat(key.get("kid"), notNullValue());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void produces_a_JWT_with_the_supplied_object_claims() {
     DecodedJWT decodedJwt = verifyHs256AndDecodeForTemplate(
         "{{jwt claims=(claimsObject role='test' inheritedRole='test')}}");
