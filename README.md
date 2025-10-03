@@ -201,3 +201,41 @@ body (with templating enabled):
 {{{jwks}}}
 ```
 {% endraw %}
+
+Which will return a JWKS like this:
+
+```json
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "use": "sig",
+      "kid": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
+      "alg": "RS256",
+      "n": "...",
+      "e": "AQAB"
+    }
+  ]
+}
+```
+
+For single key adding to existing stub you can also use:
+
+{% raw %}
+```handlebars
+{{{jwk}}}
+```
+{% endraw %}
+
+Which will return a single JWK like this:
+
+```json
+{
+  "kty": "RSA",
+  "use": "sig",
+  "kid": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
+  "alg": "RS256",
+  "n": "...",
+  "e": "AQAB"
+}
+```
